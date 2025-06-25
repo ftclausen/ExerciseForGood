@@ -36,13 +36,13 @@ This is a fitness tracking iOS application built with SwiftUI and SwiftData for 
 
 ### View Architecture
 - **Tab-Based Navigation**: "Today" tab for daily tracking, "Progress" tab for monthly statistics
-- **Circular Progress Interface**: Drag-sensitive input (1/5/10 push-ups based on drag speed)
-- **Gesture Controls**: Drag up to add, drag down to subtract push-ups with haptic feedback
+- **Circular Progress Interface**: Rotation-sensitive input (1/5/10 push-ups based on rotation speed)
+- **Gesture Controls**: Clockwise rotation to add, counter-clockwise to subtract push-ups with haptic feedback
 - **Monthly Table View**: Swipeable month navigation with historical data back to app install
 
 ### Key Patterns
 - SwiftData @Model for fitness data persistence
 - @ObservedObject for real-time progress updates
-- Custom drag gestures with velocity-based increment calculation
+- Custom circular rotation gestures with angular velocity-based increment calculation
 - Calendar-based data organization and rest day logic
 - Badge system with enum-based achievement levels
