@@ -2,9 +2,8 @@
 //  ContentView.swift
 //  ExerciseForGood
 //
-//  Created by Fred Clausen on 22/6/2025.
+//  Created by Friedrich Clausen on 25/6/2025.
 //
-
 import SwiftUI
 import SwiftData
 

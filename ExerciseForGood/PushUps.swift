@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 @Model
-final class PushUpDay {
+final class PushUpDay: ObservableObject {
     var date: Date
     var target: Int
     var completed: Int

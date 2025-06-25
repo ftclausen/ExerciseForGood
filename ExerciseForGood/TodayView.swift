@@ -130,7 +130,7 @@ struct CircularProgressView: View {
             .gesture(
                 DragGesture()
                     .onChanged { value in
-                        let dragDistance = value.translation.y - lastDragValue
+                        let dragDistance = value.translation.height - lastDragValue
                         let dragSpeed = abs(dragDistance)
                         
                         var increment: Int
@@ -144,21 +144,23 @@ struct CircularProgressView: View {
                         
                         if dragDistance < -2 { // Drag up - add push-ups
                             pushUpDay.completed += increment
-                            lastDragValue = value.translation.y
+                            lastDragValue = value.translation.height
                             
                             // Haptic feedback
-                            let impactFeedback = UIImpactFeedbackGenerator(style: .light)
-                            impactFeedback.impactOccurred()
+                            // let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                            // impactFeedback.impactOccurred()
                         } else if dragDistance > 2 { // Drag down - subtract push-ups
                             pushUpDay.completed = max(0, pushUpDay.completed - increment)
-                            lastDragValue = value.translation.y
+                            lastDragValue = value.translation.height
                             
                             // Haptic feedback
-                            let impactFeedback = UIImpactFeedbackGenerator(style: .light)
-                            impactFeedback.impactOccurred()
+                            // let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                            // impactFeedback.impactOccurred()
                         }
                     }
                     .onEnded { _ in
+                        let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                        impactFeedback.impactOccurred()
                         lastDragValue = 0
                     }
             )

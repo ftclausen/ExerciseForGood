@@ -2,7 +2,7 @@
 //  ExerciseForGoodUITestsLaunchTests.swift
 //  ExerciseForGoodUITests
 //
-//  Created by Fred Clausen on 22/6/2025.
+//  Created by Friedrich Clausen on 25/6/2025.
 //
 
 import XCTest
@@ -17,6 +17,7 @@ final class ExerciseForGoodUITestsLaunchTests: XCTestCase {
         continueAfterFailure = false
     }
 
+    @MainActor
     func testLaunch() throws {
         let app = XCUIApplication()
         app.launch()
