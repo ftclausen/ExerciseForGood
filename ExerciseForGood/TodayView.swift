@@ -13,6 +13,11 @@ struct TodayView: View {
     @StateObject private var pushUpManager = PushUpManager()
     @State private var todaysPushUps: PushUpDay?
     
+    @State private var lastLocation: CGPoint = .zero
+    @State private var currentAngle: Double = 0
+    @State private var lastAngle: Double = 0
+    @State private var accumulatedRotation: Double = 0
+    
     var body: some View {
         GeometryReader { geometry in
             VStack {
@@ -39,6 +44,73 @@ struct TodayView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.black)
+            .gesture(
+                DragGesture()
+                    .onChanged { value in
+                        guard let today = todaysPushUps, !today.isRestDay else { return }
+                        
+                        let center = CGPoint(x: geometry.size.width/2, y: geometry.size.height/2)
+                        let location = CGPoint(
+                            x: value.location.x - center.x,
+                            y: value.location.y - center.y
+                        )
+                        
+                        // Calculate angle from center
+                        currentAngle = atan2(location.y, location.x)
+                        
+                        if lastLocation != .zero {
+                            // Calculate angle difference
+                            var angleDiff = currentAngle - lastAngle
+                            
+                            // Handle angle wrapping around -π to π
+                            if angleDiff > .pi {
+                                angleDiff -= 2 * .pi
+                            } else if angleDiff < -.pi {
+                                angleDiff += 2 * .pi
+                            }
+                            
+                            accumulatedRotation += angleDiff
+                            
+                            // Determine increment based on rotation speed
+                            let rotationSpeed = abs(angleDiff)
+                            var increment: Int
+                            if rotationSpeed > 0.3 {
+                                increment = 10
+                            } else if rotationSpeed > 0.1 {
+                                increment = 5
+                            } else {
+                                increment = 1
+                            }
+                            
+                            // Check for significant rotation to trigger action
+                            if abs(accumulatedRotation) > 0.2 {
+                                if accumulatedRotation > 0 { // Clockwise - add push-ups
+                                    today.completed += increment
+                                } else { // Counter-clockwise - subtract push-ups
+                                    today.completed = max(0, today.completed - increment)
+                                }
+                                
+                                // Reset accumulated rotation after action
+                                accumulatedRotation = 0
+                            }
+                        }
+                        
+                        lastLocation = location
+                        lastAngle = currentAngle
+                    }
+                    .onEnded { _ in
+                        guard let today = todaysPushUps, !today.isRestDay else { return }
+                        
+                        let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                        impactFeedback.impactOccurred()
+                        
+                        // Reset all tracking variables
+                        lastLocation = .zero
+                        currentAngle = 0
+                        lastAngle = 0
+                        accumulatedRotation = 0
+                    }
+            )
         }
         .onAppear {
             loadTodaysPushUps()
@@ -70,9 +142,6 @@ struct RestDayView: View {
 struct CircularProgressView: View {
     @ObservedObject var pushUpDay: PushUpDay
     let size: CGFloat
-    
-    @State private var dragOffset: CGFloat = 0
-    @State private var lastDragValue: CGFloat = 0
     
     var body: some View {
         VStack {
@@ -127,43 +196,6 @@ struct CircularProgressView: View {
                         .foregroundColor(.gray)
                 }
             }
-            .gesture(
-                DragGesture()
-                    .onChanged { value in
-                        let dragDistance = value.translation.height - lastDragValue
-                        let dragSpeed = abs(dragDistance)
-                        
-                        var increment: Int
-                        if dragSpeed > 20 {
-                            increment = 10
-                        } else if dragSpeed > 5 {
-                            increment = 5
-                        } else {
-                            increment = 1
-                        }
-                        
-                        if dragDistance < -2 { // Drag up - add push-ups
-                            pushUpDay.completed += increment
-                            lastDragValue = value.translation.height
-                            
-                            // Haptic feedback
-                            // let impactFeedback = UIImpactFeedbackGenerator(style: .light)
-                            // impactFeedback.impactOccurred()
-                        } else if dragDistance > 2 { // Drag down - subtract push-ups
-                            pushUpDay.completed = max(0, pushUpDay.completed - increment)
-                            lastDragValue = value.translation.height
-                            
-                            // Haptic feedback
-                            // let impactFeedback = UIImpactFeedbackGenerator(style: .light)
-                            // impactFeedback.impactOccurred()
-                        }
-                    }
-                    .onEnded { _ in
-                        let impactFeedback = UIImpactFeedbackGenerator(style: .light)
-                        impactFeedback.impactOccurred()
-                        lastDragValue = 0
-                    }
-            )
         }
     }
 }

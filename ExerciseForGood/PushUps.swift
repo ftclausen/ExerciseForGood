@@ -78,7 +78,8 @@ class PushUpManager: ObservableObject {
         
         // Create new record for today
         let isRestDay = calendar.component(.weekday, from: today) == 1 // Sunday
-        let target = isRestDay ? 0 : Int.random(in: 70...230)
+        let randomValue = Int.random(in: 70...230)
+        let target = isRestDay ? 0 : (randomValue + 5) / 10 * 10
         
         let newDay = PushUpDay(date: today, target: target, isRestDay: isRestDay)
         modelContext.insert(newDay)
