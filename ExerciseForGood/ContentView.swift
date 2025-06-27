@@ -23,6 +23,18 @@ struct ContentView: View {
                 }
         }
         .accentColor(.orange)
+        .onAppear {
+            let appearance = UITabBarAppearance()
+            appearance.configureWithOpaqueBackground()
+            
+            appearance.stackedLayoutAppearance.normal.iconColor = UIColor.gray
+            
+            // Keep selected color as orange (this will respect your .accentColor)
+            appearance.stackedLayoutAppearance.selected.iconColor = UIColor.orange
+            appearance.stackedLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor.orange]
+            
+            UITabBar.appearance().standardAppearance = appearance
+        }
     }
 }
 
