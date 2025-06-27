@@ -24,7 +24,7 @@ This is a fitness tracking iOS application built with SwiftUI and SwiftData for 
 ### Core Components
 - **ExerciseForGoodApp.swift**: Main app entry point with SwiftData ModelContainer setup for PushUpDay model
 - **ContentView.swift**: Root TabView containing Today and Progress tabs
-- **TodayView.swift**: Main tracking interface with circular progress and drag gestures
+- **TodayView.swift**: Main tracking interface with circular progress and multiple gesture inputs
 - **ProgressView.swift**: Monthly statistics table with swipe navigation
 - **PushUps.swift**: Data models and business logic for push-up tracking
 
@@ -37,12 +37,16 @@ This is a fitness tracking iOS application built with SwiftUI and SwiftData for 
 ### View Architecture
 - **Tab-Based Navigation**: "Today" tab for daily tracking, "Progress" tab for monthly statistics
 - **Circular Progress Interface**: Rotation-sensitive input (1/5/10 push-ups based on rotation speed)
-- **Gesture Controls**: Clockwise rotation to add, counter-clockwise to subtract push-ups with haptic feedback
+- **Gesture Controls**: Multiple input methods with haptic feedback:
+  - Circular drag gestures: Clockwise rotation to add, counter-clockwise to subtract (1/5/10 increments based on speed)
+  - Single tap: Add 10 push-ups
+  - Two-finger tap: Subtract 10 push-ups
 - **Monthly Table View**: Swipeable month navigation with historical data back to app install
 
 ### Key Patterns
 - SwiftData @Model for fitness data persistence
 - @ObservedObject for real-time progress updates
-- Custom circular rotation gestures with angular velocity-based increment calculation
+- Custom gesture system combining circular rotation and tap gestures with UIKit integration
+- Angular velocity-based increment calculation for circular gestures
 - Calendar-based data organization and rest day logic
 - Badge system with enum-based achievement levels

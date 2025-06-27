@@ -44,6 +44,26 @@ struct TodayView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.black)
+            .overlay(
+                TwoFingerTapView { 
+                    guard let today = todaysPushUps, !today.isRestDay else { return }
+                    today.completed = max(0, today.completed - 10)
+                    
+                    let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+                    impactFeedback.impactOccurred()
+                }
+            )
+            .simultaneousGesture(
+                // Single tap gesture to add 10 push-ups
+                TapGesture()
+                    .onEnded {
+                        guard let today = todaysPushUps, !today.isRestDay else { return }
+                        today.completed += 10
+                        
+                        let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+                        impactFeedback.impactOccurred()
+                    }
+            )
             .gesture(
                 DragGesture()
                     .onChanged { value in
@@ -234,6 +254,40 @@ struct BadgeView: View {
             Text(level.displayText)
                 .font(.caption)
                 .foregroundColor(isEarned ? .orange : .gray)
+        }
+    }
+}
+
+struct TwoFingerTapView: UIViewRepresentable {
+    let onTwoFingerTap: () -> Void
+    
+    func makeUIView(context: Context) -> UIView {
+        let view = UIView()
+        view.backgroundColor = UIColor.clear
+        
+        let twoFingerTap = UITapGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleTwoFingerTap))
+        twoFingerTap.numberOfTouchesRequired = 2
+        twoFingerTap.numberOfTapsRequired = 1
+        view.addGestureRecognizer(twoFingerTap)
+        
+        return view
+    }
+    
+    func updateUIView(_ uiView: UIView, context: Context) {}
+    
+    func makeCoordinator() -> Coordinator {
+        Coordinator(onTwoFingerTap: onTwoFingerTap)
+    }
+    
+    class Coordinator: NSObject {
+        let onTwoFingerTap: () -> Void
+        
+        init(onTwoFingerTap: @escaping () -> Void) {
+            self.onTwoFingerTap = onTwoFingerTap
+        }
+        
+        @objc func handleTwoFingerTap() {
+            onTwoFingerTap()
         }
     }
 }
