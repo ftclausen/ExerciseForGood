@@ -8,16 +8,21 @@
 import SwiftUI
 import SwiftData
 
+import os.log
+
 struct TodayView: View {
     @Environment(\.modelContext) private var modelContext
     @StateObject private var pushUpManager = PushUpManager()
     @State private var todaysPushUps: PushUpDay?
+    @State private var currentDate = Date()
     
     @State private var lastLocation: CGPoint = .zero
     @State private var currentAngle: Double = 0
     @State private var lastAngle: Double = 0
     @State private var accumulatedRotation: Double = 0
-    
+
+    private let logger = Logger(subsystem: "uk.derfcloud.ExerciseForGood", category: "TodayView")
+
     var body: some View {
         GeometryReader { geometry in
             VStack {
@@ -135,10 +140,23 @@ struct TodayView: View {
         .onAppear {
             loadTodaysPushUps()
         }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+            checkForNewDay()
+        }
     }
-    
+
     private func loadTodaysPushUps() {
         todaysPushUps = pushUpManager.getTodaysPushUps(modelContext: modelContext)
+        currentDate = Date()
+    }
+    
+    private func checkForNewDay() {
+        let today = Calendar.current.startOfDay(for: Date())
+        let lastKnownDay = Calendar.current.startOfDay(for: currentDate)
+        
+        if today != lastKnownDay {
+            loadTodaysPushUps()
+        }
     }
 }
 
