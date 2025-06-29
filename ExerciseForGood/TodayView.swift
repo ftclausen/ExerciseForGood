@@ -7,7 +7,6 @@
 
 import SwiftUI
 import SwiftData
-
 import os.log
 
 struct TodayView: View {
@@ -21,9 +20,13 @@ struct TodayView: View {
     @State private var lastAngle: Double = 0
     @State private var accumulatedRotation: Double = 0
 
+    @State private var showConfetti: Bool = false
+    @State private var confettiAlreadyShown: Bool = false
+
     private let logger = Logger(subsystem: "uk.derfcloud.ExerciseForGood", category: "TodayView")
 
     var body: some View {
+
         GeometryReader { geometry in
             VStack {
                 Spacer()
@@ -67,6 +70,7 @@ struct TodayView: View {
                         
                         let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
                         impactFeedback.impactOccurred()
+                        showConfettiIfRequired(today: today)
                     }
             )
             .gesture(
@@ -122,6 +126,8 @@ struct TodayView: View {
                         
                         lastLocation = location
                         lastAngle = currentAngle
+
+                        showConfettiIfRequired(today: today)
                     }
                     .onEnded { _ in
                         guard let today = todaysPushUps, !today.isRestDay else { return }
@@ -136,6 +142,7 @@ struct TodayView: View {
                         accumulatedRotation = 0
                     }
             )
+            .displayConfetti(isActive: $showConfetti)
         }
         .onAppear {
             loadTodaysPushUps()
@@ -148,6 +155,8 @@ struct TodayView: View {
     private func loadTodaysPushUps() {
         todaysPushUps = pushUpManager.getTodaysPushUps(modelContext: modelContext)
         currentDate = Date()
+        confettiAlreadyShown = false
+        showConfetti = false
     }
     
     private func checkForNewDay() {
@@ -156,6 +165,13 @@ struct TodayView: View {
         
         if today != lastKnownDay {
             loadTodaysPushUps()
+        }
+    }
+
+    private func showConfettiIfRequired(today: PushUpDay) {
+        if today.completed >= today.target && !confettiAlreadyShown {
+            showConfetti = true
+            confettiAlreadyShown = true
         }
     }
 }
