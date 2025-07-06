@@ -25,13 +25,18 @@ struct TodayView: View {
 
     private let logger = Logger(subsystem: "uk.derfcloud.ExerciseForGood", category: "TodayView")
 
+    @StateObject var overlayManager = VariableOverlayManager()
+
+    // var pushUpSession: PushUpSessionTracker
+
     var body: some View {
 
         GeometryReader { geometry in
             VStack {
                 Spacer()
-                
+
                 if let today = todaysPushUps {
+                    // overlayManager = VariableOverlayManager()
                     if today.isRestDay {
                         RestDayView()
                     } else {
@@ -53,10 +58,14 @@ struct TodayView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.black)
             .overlay(
-                TwoFingerTapView { 
+                TwoFingerTapView {
                     guard let today = todaysPushUps, !today.isRestDay else { return }
+                    let oldCompleted = today.completed
                     today.completed = max(0, today.completed - 10)
-                    
+                    let actualDecrease = oldCompleted - today.completed
+                    PushUpSessionTracker.shared.soFar -= actualDecrease
+                    overlayManager.updateVariable("\(PushUpSessionTracker.shared.soFar)")
+
                     let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
                     impactFeedback.impactOccurred()
                 }
@@ -67,7 +76,9 @@ struct TodayView: View {
                     .onEnded {
                         guard let today = todaysPushUps, !today.isRestDay else { return }
                         today.completed += 10
-                        
+                        PushUpSessionTracker.shared.soFar += 10
+                        overlayManager.updateVariable("+\(PushUpSessionTracker.shared.soFar)")
+
                         let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
                         impactFeedback.impactOccurred()
                         showConfettiIfRequired(today: today)
@@ -115,8 +126,16 @@ struct TodayView: View {
                             if abs(accumulatedRotation) > 0.2 {
                                 if accumulatedRotation > 0 { // Clockwise - add push-ups
                                     today.completed += increment
+                                    
+                                    PushUpSessionTracker.shared.soFar += increment
+                                    overlayManager.updateVariable("+\(PushUpSessionTracker.shared.soFar)")
                                 } else { // Counter-clockwise - subtract push-ups
+                                    let oldCompleted = today.completed
                                     today.completed = max(0, today.completed - increment)
+                                    let actualDecrease = oldCompleted - today.completed
+
+                                    PushUpSessionTracker.shared.soFar -= actualDecrease
+                                    overlayManager.updateVariable("\(PushUpSessionTracker.shared.soFar)")
                                 }
                                 
                                 // Reset accumulated rotation after action
@@ -143,6 +162,12 @@ struct TodayView: View {
                     }
             )
             .displayConfetti(isActive: $showConfetti)
+            .overlay(
+
+                VariableOverlayView(manager: overlayManager)
+
+                // VariableOverlayView(manager: overlayManager)
+            )
         }
         .onAppear {
             loadTodaysPushUps()

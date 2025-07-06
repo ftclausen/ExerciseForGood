@@ -14,7 +14,7 @@ final class PushUpDay: ObservableObject {
     var target: Int
     var completed: Int
     var isRestDay: Bool
-    
+
     init(date: Date, target: Int = 0, completed: Int = 0, isRestDay: Bool = false) {
         self.date = date
         self.target = target
