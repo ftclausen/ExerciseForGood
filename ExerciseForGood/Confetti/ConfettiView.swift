@@ -31,7 +31,7 @@ struct ConfettiView: View {
                 withAnimation(.linear(duration: fallSpeed)) {
                     yPosition = screenHeight + 50
                 }
-                withAnimation(.linear(duration: fallSpeed).repeatForever(autoreverses: false)) {
+                withAnimation(.linear(duration: fallSpeed)) {
                     rotation += 360
                 }
             }
