@@ -8,7 +8,7 @@ class VariableOverlayManager: ObservableObject {
     @Published var shouldFlash = false
 
     private var dismissTimer: Timer?
-    private let dismissDelay: TimeInterval = 1.0
+    private let dismissDelay: TimeInterval = 0.7
 
     func updateVariable(_ newText: String) {
         // Update text
@@ -75,10 +75,7 @@ struct VariableOverlayView: View {
                 Text(manager.text)
                     .font(.system(size: 120, weight: .medium))
                     .foregroundColor(.orange)
-                    .background(
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(Color.black.opacity(0.8))
-                    )
+
                     .opacity(manager.shouldFlash ? 0.7 : 1.0)
                     .scaleEffect(manager.isVisible ? 1.0 : 0.8)
                     .transition(
@@ -99,7 +96,7 @@ struct VariableOverlayView: View {
 
             Spacer()
         }
-        .padding(.top, 60)
+        .padding(.top, 25)
         .allowsHitTesting(false)  // Allow touches to pass through
     }
 }
