@@ -36,18 +36,17 @@ struct TodayView: View {
                 Spacer()
 
                 if let today = todaysPushUps {
-                    // overlayManager = VariableOverlayManager()
                     if today.isRestDay {
                         RestDayView()
                     } else {
                         CircularProgressView(
                             pushUpDay: today,
                             size: min(geometry.size.width, geometry.size.height) * 0.6
-                        )
+                        ).padding(.top, 60)
                     }
                     
                     BadgeRowView(badgeLevel: today.badgeLevel)
-                        .padding(.top, 40)
+                        .padding(.top, 90)
                 } else {
                     ProgressView()
                         .scaleEffect(2)
@@ -163,10 +162,7 @@ struct TodayView: View {
             )
             .displayConfetti(isActive: $showConfetti)
             .overlay(
-
                 VariableOverlayView(manager: overlayManager)
-
-                // VariableOverlayView(manager: overlayManager)
             )
         }
         .onAppear {
@@ -269,7 +265,7 @@ struct CircularProgressView: View {
                         .font(.title3)
                         .foregroundColor(.orange)
                         .padding(.bottom, 8)
-                    
+
                     Text("Target: \(pushUpDay.target)")
                         .font(.caption)
                         .foregroundColor(.gray)

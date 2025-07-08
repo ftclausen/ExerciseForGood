@@ -96,7 +96,7 @@ struct VariableOverlayView: View {
 
             Spacer()
         }
-        .padding(.top, 25)
+        .padding(.top, 20)
         .allowsHitTesting(false)  // Allow touches to pass through
     }
 }
