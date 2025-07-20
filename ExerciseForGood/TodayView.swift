@@ -221,7 +221,7 @@ struct CircularProgressView: View {
     
     var body: some View {
         VStack {
-            Text("Day \(Calendar.current.component(.day, from: pushUpDay.date))")
+            Text(getTodayDateString())
                 .font(.title2)
                 .foregroundColor(.white)
                 .padding(.bottom, 20)
@@ -273,6 +273,22 @@ struct CircularProgressView: View {
                 }
             }
         }
+    }
+
+    private func getTodayDateString() -> String {
+        let date = Date()
+        let calendar = Calendar.current
+        let day = calendar.component(.day, from: date)
+
+        let ordinalFormatter = NumberFormatter()
+        ordinalFormatter.numberStyle = .ordinal
+        let ordinalDay = ordinalFormatter.string(from: NSNumber(value: day)) ?? "\(day)"
+
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MMMM"
+        let monthYear = dateFormatter.string(from: date)
+
+        return "\(ordinalDay) \(monthYear)"
     }
 }
 
