@@ -24,7 +24,7 @@ struct TodayView: View {
     @State private var confettiAlreadyShown: Bool = false
 
     private let logger = Logger(subsystem: "uk.derfcloud.ExerciseForGood", category: "TodayView")
-    private var incrementAmount = 1
+    private var incrementAmount = 10
 
     @StateObject var overlayManager = VariableOverlayManager()
 
