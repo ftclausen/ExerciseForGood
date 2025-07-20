@@ -46,7 +46,7 @@ struct DisplayConfettiModifier: ViewModifier {
         do {
             try await Task.sleep(nanoseconds: UInt64(animationTime * 1_000_000_000))
             withAnimation(.easeOut(duration: fadeTime)) {
-                opacity = 0
+                opacity = 1
             }
         } catch {}
     }

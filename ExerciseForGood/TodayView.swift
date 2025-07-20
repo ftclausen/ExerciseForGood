@@ -24,6 +24,7 @@ struct TodayView: View {
     @State private var confettiAlreadyShown: Bool = false
 
     private let logger = Logger(subsystem: "uk.derfcloud.ExerciseForGood", category: "TodayView")
+    private var incrementAmount = 1
 
     @StateObject var overlayManager = VariableOverlayManager()
 
@@ -60,7 +61,7 @@ struct TodayView: View {
                 TwoFingerTapView {
                     guard let today = todaysPushUps, !today.isRestDay else { return }
                     let oldCompleted = today.completed
-                    today.completed = max(0, today.completed - 10)
+                    today.completed = max(0, today.completed - incrementAmount)
                     let actualDecrease = oldCompleted - today.completed
                     PushUpSessionTracker.shared.soFar -= actualDecrease
                     overlayManager.updateVariable("\(PushUpSessionTracker.shared.soFar)")
@@ -74,8 +75,8 @@ struct TodayView: View {
                 TapGesture()
                     .onEnded {
                         guard let today = todaysPushUps, !today.isRestDay else { return }
-                        today.completed += 10
-                        PushUpSessionTracker.shared.soFar += 10
+                        today.completed += incrementAmount
+                        PushUpSessionTracker.shared.soFar += incrementAmount
                         overlayManager.updateVariable("+\(PushUpSessionTracker.shared.soFar)")
 
                         let impactFeedback = UIImpactFeedbackGenerator(style: .medium)

@@ -19,10 +19,26 @@ struct ConfettiView: View {
     let radius = CGFloat.random(in: 5...10)
     let screenWidth = UIScreen.main.bounds.width
     let screenHeight = UIScreen.main.bounds.height
-    
+
+    let useRainbowColours: Bool = true
+
+    let rainbowColors: [Color] = [
+        .red,
+        .orange,
+        .yellow,
+        .green,
+        .blue,
+        Color(red: 0.29, green: 0, blue: 0.51), // Indigo
+        .purple
+    ]
+
+    func getRandomRainbowColor() -> Color {
+        return rainbowColors.randomElement() ?? .orange
+    }
+
     var body: some View {
         Circle()
-            .fill(Color.orange)
+            .fill(useRainbowColours ? getRandomRainbowColor() : .orange)
             .frame(width: radius * 2, height: radius * 2)
             .position(x: CGFloat.random(in: 0...screenWidth), y: yPosition)
             .rotationEffect(.degrees(rotation))
