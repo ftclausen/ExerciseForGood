@@ -14,7 +14,7 @@ struct TodayView: View {
     @StateObject private var pushUpManager = PushUpManager()
     @State private var todaysPushUps: PushUpDay?
     @State private var currentDate = Date()
-    
+
     @State private var lastLocation: CGPoint = .zero
     @State private var currentAngle: Double = 0
     @State private var lastAngle: Double = 0
@@ -45,14 +45,14 @@ struct TodayView: View {
                             size: min(geometry.size.width, geometry.size.height) * 0.6
                         ).padding(.top, 60)
                     }
-                    
+
                     BadgeRowView(badgeLevel: today.badgeLevel)
                         .padding(.top, 90)
                 } else {
                     ProgressView()
                         .scaleEffect(2)
                 }
-                
+
                 Spacer()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -88,29 +88,29 @@ struct TodayView: View {
                 DragGesture()
                     .onChanged { value in
                         guard let today = todaysPushUps, !today.isRestDay else { return }
-                        
+
                         let center = CGPoint(x: geometry.size.width/2, y: geometry.size.height/2)
                         let location = CGPoint(
                             x: value.location.x - center.x,
                             y: value.location.y - center.y
                         )
-                        
+
                         // Calculate angle from center
                         currentAngle = atan2(location.y, location.x)
-                        
+
                         if lastLocation != .zero {
                             // Calculate angle difference
                             var angleDiff = currentAngle - lastAngle
-                            
+
                             // Handle angle wrapping around -π to π
                             if angleDiff > .pi {
                                 angleDiff -= 2 * .pi
                             } else if angleDiff < -.pi {
                                 angleDiff += 2 * .pi
                             }
-                            
+
                             accumulatedRotation += angleDiff
-                            
+
                             // Determine increment based on rotation speed
                             let rotationSpeed = abs(angleDiff)
                             var increment: Int
@@ -121,12 +121,12 @@ struct TodayView: View {
                             } else {
                                 increment = 1
                             }
-                            
+
                             // Check for significant rotation to trigger action
                             if abs(accumulatedRotation) > 0.2 {
                                 if accumulatedRotation > 0 { // Clockwise - add push-ups
                                     today.completed += increment
-                                    
+
                                     PushUpSessionTracker.shared.soFar += increment
                                     overlayManager.updateVariable("+\(PushUpSessionTracker.shared.soFar)")
                                 } else { // Counter-clockwise - subtract push-ups
@@ -137,12 +137,12 @@ struct TodayView: View {
                                     PushUpSessionTracker.shared.soFar -= actualDecrease
                                     overlayManager.updateVariable("\(PushUpSessionTracker.shared.soFar)")
                                 }
-                                
+
                                 // Reset accumulated rotation after action
                                 accumulatedRotation = 0
                             }
                         }
-                        
+
                         lastLocation = location
                         lastAngle = currentAngle
 
@@ -150,10 +150,10 @@ struct TodayView: View {
                     }
                     .onEnded { _ in
                         guard let today = todaysPushUps, !today.isRestDay else { return }
-                        
+
                         let impactFeedback = UIImpactFeedbackGenerator(style: .light)
                         impactFeedback.impactOccurred()
-                        
+
                         // Reset all tracking variables
                         lastLocation = .zero
                         currentAngle = 0
@@ -180,11 +180,11 @@ struct TodayView: View {
         confettiAlreadyShown = false
         showConfetti = false
     }
-    
+
     private func checkForNewDay() {
         let today = Calendar.current.startOfDay(for: Date())
         let lastKnownDay = Calendar.current.startOfDay(for: currentDate)
-        
+
         if today != lastKnownDay {
             loadTodaysPushUps()
         }
