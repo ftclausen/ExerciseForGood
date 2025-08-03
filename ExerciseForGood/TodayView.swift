@@ -205,7 +205,7 @@ struct RestDayView: View {
                 Circle()
                     .stroke(Color.gray.opacity(0.3), lineWidth: 8)
                     .frame(width: 250, height: 250)
-                
+
                 Text("Rest Day")
                     .font(.title)
                     .fontWeight(.bold)
@@ -218,34 +218,34 @@ struct RestDayView: View {
 struct CircularProgressView: View {
     @ObservedObject var pushUpDay: PushUpDay
     let size: CGFloat
-    
+
     private var progressCalculator: PushUpProgressCalculator {
         PushUpProgressCalculator(dailyTarget: pushUpDay.target)
     }
-    
+
     private var expectedProgress: Double {
         guard !pushUpDay.isRestDay,
               let expected = progressCalculator.expectedPushUps(at: Date()) else { return 0 }
         return Double(expected) / Double(pushUpDay.target)
     }
-    
+
     private var isAheadOfSchedule: Bool {
         progressCalculator.isOnTrack(completed: pushUpDay.completed, at: Date()) ?? false
     }
-    
+
     var body: some View {
         VStack {
             Text(getTodayDateString())
                 .font(.title2)
                 .foregroundColor(.white)
                 .padding(.bottom, 20)
-            
+
             ZStack {
                 // Background circle
                 Circle()
                     .stroke(Color.gray.opacity(0.3), lineWidth: 12)
                     .frame(width: size, height: size)
-                
+
                 // Progress circle
                 Circle()
                     .trim(from: 0, to: min(pushUpDay.progressPercentage, 1.0))
@@ -256,7 +256,7 @@ struct CircularProgressView: View {
                     .rotationEffect(.degrees(-90))
                     .frame(width: size, height: size)
                     .animation(.easeInOut(duration: 0.3), value: pushUpDay.progressPercentage)
-                
+
                 // Over-progress circle (for >100%)
                 if pushUpDay.progressPercentage > 1.0 {
                     Circle()
@@ -269,27 +269,27 @@ struct CircularProgressView: View {
                         .frame(width: size - 20, height: size - 20)
                         .animation(.easeInOut(duration: 0.3), value: pushUpDay.progressPercentage)
                 }
-                
+
                 // Expected progress indicator dot
                 if !pushUpDay.isRestDay && expectedProgress > 0 && expectedProgress <= 1.0 {
                     let angle = expectedProgress * 360 - 90 // Adjust for starting at top
                     let radius = size / 2
                     let dotX = radius * cos(angle * .pi / 180)
                     let dotY = radius * sin(angle * .pi / 180)
-                    
+
                     Circle()
                         .fill(isAheadOfSchedule ? Color.green : Color.red)
                         .frame(width: 12, height: 12)
                         .offset(x: dotX, y: dotY)
                         .animation(.easeInOut(duration: 0.3), value: expectedProgress)
                 }
-                
+
                 // Center content
                 VStack {
                     Text("\(pushUpDay.completed)")
                         .font(.system(size: size * 0.2, weight: .bold, design: .rounded))
                         .foregroundColor(.white)
-                    
+
                     Text("Complete")
                         .font(.title3)
                         .foregroundColor(.orange)
@@ -322,7 +322,7 @@ struct CircularProgressView: View {
 
 struct BadgeRowView: View {
     let badgeLevel: BadgeLevel
-    
+
     var body: some View {
         HStack(spacing: 20) {
             ForEach([BadgeLevel.twentyFive, .fifty, .seventyFive, .complete], id: \.rawValue) { level in
@@ -338,19 +338,19 @@ struct BadgeRowView: View {
 struct BadgeView: View {
     let level: BadgeLevel
     let isEarned: Bool
-    
+
     var body: some View {
         VStack {
             ZStack {
                 Circle()
                     .fill(isEarned ? Color.orange : Color.gray.opacity(0.3))
                     .frame(width: 60, height: 60)
-                
+
                 Image(systemName: "shield.fill")
                     .font(.title2)
                     .foregroundColor(isEarned ? .black : .gray)
             }
-            
+
             Text(level.displayText)
                 .font(.caption)
                 .foregroundColor(isEarned ? .orange : .gray)
@@ -360,32 +360,32 @@ struct BadgeView: View {
 
 struct TwoFingerTapView: UIViewRepresentable {
     let onTwoFingerTap: () -> Void
-    
+
     func makeUIView(context: Context) -> UIView {
         let view = UIView()
         view.backgroundColor = UIColor.clear
-        
+
         let twoFingerTap = UITapGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleTwoFingerTap))
         twoFingerTap.numberOfTouchesRequired = 2
         twoFingerTap.numberOfTapsRequired = 1
         view.addGestureRecognizer(twoFingerTap)
-        
+
         return view
     }
-    
+
     func updateUIView(_ uiView: UIView, context: Context) {}
-    
+
     func makeCoordinator() -> Coordinator {
         Coordinator(onTwoFingerTap: onTwoFingerTap)
     }
-    
+
     class Coordinator: NSObject {
         let onTwoFingerTap: () -> Void
-        
+
         init(onTwoFingerTap: @escaping () -> Void) {
             self.onTwoFingerTap = onTwoFingerTap
         }
-        
+
         @objc func handleTwoFingerTap() {
             onTwoFingerTap()
         }
