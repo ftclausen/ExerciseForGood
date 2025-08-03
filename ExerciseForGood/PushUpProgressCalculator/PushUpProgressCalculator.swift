@@ -18,7 +18,7 @@ struct PushUpProgressCalculator {
     }
     
     // MARK: - Initializer
-    init(dailyTarget: Int, startHour: Int = 8, endHour: Int = 23) {
+    init(dailyTarget: Int, startHour: Int = 8, endHour: Int = 21) {
         self.dailyTarget = dailyTarget
         self.startHour = startHour
         self.endHour = endHour

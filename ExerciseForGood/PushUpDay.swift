@@ -77,7 +77,7 @@ class PushUpManager: ObservableObject {
         }
         
         // Create new record for today
-        let isRestDay = calendar.component(.weekday, from: today) == 2 // 1 // Sunday
+        let isRestDay = calendar.component(.weekday, from: today) == 1 // 1 is Sunday
         let randomValue = Int.random(in: 70...230)
         // let randomValue = Int.random(in: 30...50)
         let target = isRestDay ? 0 : (randomValue + 5) / 10 * 10
