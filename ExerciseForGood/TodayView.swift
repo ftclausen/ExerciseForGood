@@ -219,6 +219,20 @@ struct CircularProgressView: View {
     @ObservedObject var pushUpDay: PushUpDay
     let size: CGFloat
     
+    private var progressCalculator: PushUpProgressCalculator {
+        PushUpProgressCalculator(dailyTarget: pushUpDay.target)
+    }
+    
+    private var expectedProgress: Double {
+        guard !pushUpDay.isRestDay,
+              let expected = progressCalculator.expectedPushUps(at: Date()) else { return 0 }
+        return Double(expected) / Double(pushUpDay.target)
+    }
+    
+    private var isAheadOfSchedule: Bool {
+        progressCalculator.isOnTrack(completed: pushUpDay.completed, at: Date()) ?? false
+    }
+    
     var body: some View {
         VStack {
             Text(getTodayDateString())
@@ -254,6 +268,20 @@ struct CircularProgressView: View {
                         .rotationEffect(.degrees(-90))
                         .frame(width: size - 20, height: size - 20)
                         .animation(.easeInOut(duration: 0.3), value: pushUpDay.progressPercentage)
+                }
+                
+                // Expected progress indicator dot
+                if !pushUpDay.isRestDay && expectedProgress > 0 && expectedProgress <= 1.0 {
+                    let angle = expectedProgress * 360 - 90 // Adjust for starting at top
+                    let radius = size / 2
+                    let dotX = radius * cos(angle * .pi / 180)
+                    let dotY = radius * sin(angle * .pi / 180)
+                    
+                    Circle()
+                        .fill(isAheadOfSchedule ? Color.green : Color.red)
+                        .frame(width: 12, height: 12)
+                        .offset(x: dotX, y: dotY)
+                        .animation(.easeInOut(duration: 0.3), value: expectedProgress)
                 }
                 
                 // Center content
