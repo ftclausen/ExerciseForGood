@@ -187,6 +187,9 @@ struct TodayView: View {
 
         if today != lastKnownDay {
             loadTodaysPushUps()
+        } else {
+            // Refresh current date to trigger progress dot updates
+            currentDate = Date()
         }
     }
 
